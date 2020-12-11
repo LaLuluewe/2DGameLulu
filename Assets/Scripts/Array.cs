@@ -16,7 +16,7 @@ public class Array : MonoBehaviour
 
 	int[] randomNumbers = new int[3] ;
 
-
+    // Hola uwuwuuw
     // Start is called before the first frame update
     void Start()
     {
