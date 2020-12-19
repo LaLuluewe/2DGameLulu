@@ -16,6 +16,8 @@ public class EnemyController : MonoBehaviour
 
     float direction = 1;
 
+    public ParticleSystem smokeEffect;
+
     Animator  animator;
     void Start()
     {
