@@ -27,6 +27,13 @@ public class Proyectil : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D other) {
+        EnemyController e = other.collider.GetComponent<EnemyController>();
+
+        if(e != null){
+            e.Fix();
+
+        }
+
         Debug.Log("El proyectil hizo colision con: " + other.gameObject);
         Destroy(gameObject);
         

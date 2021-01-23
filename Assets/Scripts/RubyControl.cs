@@ -45,7 +45,7 @@ public class RubyControl : MonoBehaviour
         
         Vector2 move = new Vector2(horizontal, vertical);
 
-        if(!Mathf.Approximately(move.x, 0.0f) || Mathf.Approximately(move.y, 0.0f)){
+        if(!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f)){
             lookDirection.Set(move.x, move.y);
             lookDirection.Normalize();
         }       
@@ -115,7 +115,8 @@ public class RubyControl : MonoBehaviour
         GameObject proyectilObject = Instantiate(proyectilPrefab, rigidbody2d.position + Vector2.up *0.5f, Quaternion.identity);
 
         Proyectil proyectil = proyectilObject.GetComponent<Proyectil>();
-        proyectil.Launch(lookDirection, 500);
+        Debug.Log("Look Direction = " + lookDirection);
+        proyectil.Launch(lookDirection, 300);
 
         animator.SetTrigger("Launch");
     }
