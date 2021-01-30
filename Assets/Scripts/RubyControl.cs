@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class RubyControl : MonoBehaviour
 {
-        
+    // ---------MOVIEMINETO-----
     // Start is called before the first frame update
 
+    // ------HEALTH---
     public float speed = 0f;
     public int maxHealth = 5;
     public int health {get {return currentHealth;}}
@@ -21,16 +22,31 @@ public class RubyControl : MonoBehaviour
 
     Vector2 lookDirection = new Vector2(1, 0);
 
+    // proyectil
     public GameObject proyectilPrefab;
+
+    //++++++AUDIO=======
+    public AudioClip shootingSound;
+    public AudioClip hitSound;
+
+    AudioSource audioSource;
+
+    public Transform respawnPosition;
 
     void Start()
     {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 10;
 
+        //AUDIO
+        audioSource =GetComponent<AudioSource>();
+
+        //MOVIMIENTO 
         rigidbody2d = GetComponent<Rigidbody2D>();
+        //ANIMACION
         animator = GetComponent<Animator>();
 
+        //HEATLH
         currentHealth = maxHealth;
 
 
@@ -40,6 +56,16 @@ public class RubyControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //HEALTH
+        if(isInvisible){
+            InvisibleTimer -= Time.deltaTime;
+            if(InvisibleTimer < 0){
+                isInvisible = false;
+
+            }
+        }
+
+        //MOVIMIENTO
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         
@@ -56,23 +82,19 @@ public class RubyControl : MonoBehaviour
 
 
        // Debug.Log(horizontal);
+
+       //MOVIMETO
         Vector2 position = rigidbody2d.position;
         position = position + move * speed * Time.deltaTime;
 
         rigidbody2d.MovePosition(position);
-        /*position.x = position.x +  speed * horizontal;
+        position.x = position.x +  speed * horizontal;
         position.y = position.y + speed * vertical;
         
-        rigidbody2d.MovePosition(position);*/
+        rigidbody2d.MovePosition(position);
 
 
-        if(isInvisible){
-            InvisibleTimer -= Time.deltaTime;
-            if(InvisibleTimer < 0){
-                isInvisible = false;
-
-            }
-        }
+  
 
         if(Input.GetKeyDown(KeyCode.Space)){
             Launch();
@@ -86,7 +108,7 @@ public class RubyControl : MonoBehaviour
                 if(character != null){
                     character.DisplayDialog();
                 }
-                Debug.Log("Raycast has hit the object " + hit.collider.gameObject);
+            
 
             }
         }
@@ -95,7 +117,7 @@ public class RubyControl : MonoBehaviour
     }
 
 
-        
+        //HEATLH
     public void ChangeHealth(int amount){
         if(amount < 0){
             if(isInvisible){
@@ -103,22 +125,35 @@ public class RubyControl : MonoBehaviour
             }
             isInvisible = true;
             InvisibleTimer = timeInvisible;
+            audioSource.PlayOneShot(hitSound);
+
 
         }
+        animator.SetTrigger("Hit");
+        audioSource.PlayOneShot(hitSound);
 
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        if(currentHealth == 0){
+            Respawn();
+
+        }
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
 
+    }
+
+    void Respawn(){
+        ChangeHealth(maxHealth);
+        transform.position = respawnPosition.position;
     }
 
     void Launch(){
         GameObject proyectilObject = Instantiate(proyectilPrefab, rigidbody2d.position + Vector2.up *0.5f, Quaternion.identity);
 
         Proyectil proyectil = proyectilObject.GetComponent<Proyectil>();
-        Debug.Log("Look Direction = " + lookDirection);
         proyectil.Launch(lookDirection, 300);
 
         animator.SetTrigger("Launch");
+        audioSource.PlayOneShot(shootingSound);
     }
 
 
